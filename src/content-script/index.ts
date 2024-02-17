@@ -1,6 +1,7 @@
+import Helper from '@/utils/helper'
 import './index.scss'
-import helper from '@/utils/helper'
 
+const helper = new Helper()
 const src = chrome.runtime.getURL('src/content-script/iframe/index.html')
 
 const iframe = new DOMParser().parseFromString(
@@ -10,10 +11,10 @@ const iframe = new DOMParser().parseFromString(
 
 if (iframe) {
   // document.body?.append(iframe)
-  const carousel = document.querySelector("div[data-testid='carousel']")
-  if (carousel) {
-    carousel.append(iframe)
-  }
+  // const carousel = document.querySelector("div[data-testid='carousel']")
+  // if (carousel) {
+  //   carousel.append(iframe)
+  // }
 }
 
 self.onerror = function (message, source, lineno, colno, error) {
