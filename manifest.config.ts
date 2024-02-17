@@ -28,12 +28,13 @@ export default defineManifest(async (env) => ({
     {
       all_frames: false,
       js: ['src/content-script/index.ts'],
-      matches: ['*://*/*'],
+      // matches: ['*://*/*'],
+      matches: ['*://trendyol.com/*'],
       run_at: 'document_end',
     },
   ],
   host_permissions: ['*://*/*'],
   options_page: 'src/options/index.html',
-  permissions: ['storage'],
+  permissions: ['storage', 'activeTab'],
   web_accessible_resources: [],
 }))

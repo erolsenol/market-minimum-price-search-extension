@@ -16,3 +16,5 @@ self.onerror = function (message, source, lineno, colno, error) {
     `Error: ${message}\nSource: ${source}\nLine: ${lineno}\nColumn: ${colno}\nError object: ${error}`
   )
 }
+
+console.log("content script loaded")

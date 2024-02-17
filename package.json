@@ -5,7 +5,7 @@
     "vue": "^3.4.10",
     "vue-router": "^4.2.5"
   },
-  "description": "A Vue 3 + Vite project for building Chrome extensions",
+  "description": "Market Minimum Price Search Extension",
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.0-beta.22",
     "@iconify-json/mdi": "^1.1.64",
@@ -44,7 +44,7 @@
   "name": "vite-vue3-chrome-extension-v3",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mubaidr/vite-vue3-chrome-extension-v3"
+    "url": "https://github.com/erolsenol/market-minimum-price-search-extension"
   },
   "overrides": {
     "@crxjs/vite-plugin": "$@crxjs/vite-plugin"
