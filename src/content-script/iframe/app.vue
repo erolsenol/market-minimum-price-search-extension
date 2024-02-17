@@ -1,20 +1,14 @@
 <script setup lang="ts"></script>
 
 <template>
-  <header
-    aria-label="Site Header"
-    class="bg-gray-50"
-  >
-    Content Script Iframe Header
+  <header aria-label="Site Header" class="bg-gray-50">
+    Header
   </header>
 
   <RouterView></RouterView>
 
-  <footer
-    aria-label="Site Footer"
-    class="bg-gray-50"
-  >
-    Content Script Iframe Footer
+  <footer aria-label="Site Footer" class="bg-gray-50">
+    Footer
   </footer>
 </template>
 

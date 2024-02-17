@@ -1,4 +1,5 @@
 import './index.scss'
+import helper from '@/utils/helper'
 
 const src = chrome.runtime.getURL('src/content-script/iframe/index.html')
 
@@ -8,7 +9,11 @@ const iframe = new DOMParser().parseFromString(
 ).body.firstElementChild
 
 if (iframe) {
-  document.body?.append(iframe)
+  // document.body?.append(iframe)
+  const carousel = document.querySelector("div[data-testid='carousel']")
+  if (carousel) {
+    carousel.append(iframe)
+  }
 }
 
 self.onerror = function (message, source, lineno, colno, error) {
@@ -17,4 +22,6 @@ self.onerror = function (message, source, lineno, colno, error) {
   )
 }
 
-console.log("content script loaded")
+// helper.initialize()
+helper.uiCreate()
+console.log('content script loaded')
