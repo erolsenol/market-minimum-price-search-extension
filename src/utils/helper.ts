@@ -4,7 +4,8 @@ import domTools from './dom-tools'
 
 let searchCount = 5,
   scrollCount = 0,
-  resizeObserver: ResizeObserver | null = null
+  resizeObserver: ResizeObserver | null = null,
+  _productLengths: number[] = []
 
 export async function initialize() {
   const meta = domTools.createElement('meta')
@@ -100,10 +101,13 @@ export function uiCreate() {
   // document.querySelector('body')?.setAttribute('style', `max-height: 20000px;`)
 }
 export async function pageScroll() {
+  _productLengths = []
   resizeObserver = new ResizeObserver(async () => {
     const productLength =
       document.querySelector('.prdct-cntnr-wrppr').children.length || 0
-
+    console.log('productLength', productLength)
+    console.log('scrollCount', scrollCount)
+    _productLengths.push(productLength)
     if (productLength > 100 && scrollCount == 0) {
       startSearch()
       scrollToTop()
@@ -113,6 +117,18 @@ export async function pageScroll() {
     if (scrollCount < 7) {
       await timeout(250)
       scrollDown()
+      if (
+        _productLengths.length > 2 &&
+        _productLengths[_productLengths.length - 1] ===
+          _productLengths[_productLengths.length - 2] &&
+        _productLengths[_productLengths.length - 1] ===
+          _productLengths[_productLengths.length - 3]
+      ) {
+        setTimeout(() => {
+          startSearch()
+          scrollToTop()
+        }, 250)
+      }
     } else if (scrollCount > 7) {
       scrollToTop()
       startSearch()
@@ -206,7 +222,7 @@ export function pressTheResult(data) {
     const item = data[index]
 
     const itemMin = domTools.createElement('li')
-    itemMin.innerText = `Price: ${item.price}  --  ${item.rating ? `&#9733;${item.rating}` : ''}  --  Title: ${item.title} react.y: ${item.rectY}`
+    itemMin.innerHTML = `Price: ${item.price}  --  ${item.rating ? `&#9733;${item.rating}` : ''}  --  Title: ${item.title} react.y: ${item.rectY}`
 
     const bodyHeight = document.querySelector('body')?.offsetHeight
     const prdctCntnrWrpprHeight = document.querySelector(
