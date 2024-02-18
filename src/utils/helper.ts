@@ -99,6 +99,7 @@ export function uiCreate() {
   // buttonUp.addEventListener('click', scrollToTop)
   // document.querySelector('body')?.append(buttonUp)
   // document.querySelector('body')?.setAttribute('style', `max-height: 20000px;`)
+  writeUnitQuantity()
 }
 export async function pageScroll() {
   _productLengths = []
@@ -118,16 +119,18 @@ export async function pageScroll() {
       await timeout(250)
       scrollDown()
       if (
-        _productLengths.length > 2 &&
-        _productLengths[_productLengths.length - 1] ===
-          _productLengths[_productLengths.length - 2] &&
-        _productLengths[_productLengths.length - 1] ===
-          _productLengths[_productLengths.length - 3]
+        (_productLengths.length > 2 &&
+          _productLengths[_productLengths.length - 1] ===
+            _productLengths[_productLengths.length - 2] &&
+          _productLengths[_productLengths.length - 1] ===
+            _productLengths[_productLengths.length - 3]) ||
+        _productLengths[0] ===
+          document.querySelector('.prdct-cntnr-wrppr').children.length
       ) {
         setTimeout(() => {
           startSearch()
           scrollToTop()
-        }, 250)
+        }, 300)
         return
       }
     } else if (scrollCount > 7) {
@@ -242,9 +245,11 @@ export function pressTheResult(data) {
       console.log('prdctCntnrWrpprReact', prdctCntnrWrpprReact)
       console.log('item.rectY', item.rectY)
       console.log('window.scrollY', window.scrollY)
+
       // const scrollSize =
       //   item.rectY - bodyHeight + prdctCntnrWrpprHeight - window.scrollY + 350
-      const scrollSize = item.rectY - window.scrollY + prdctCntnrWrpprReact?.top + 600
+      const scrollSize =
+        item.rectY - window.scrollY + prdctCntnrWrpprReact?.top + 600
 
       window.scrollBy(0, scrollSize)
     })
@@ -252,16 +257,13 @@ export function pressTheResult(data) {
   }
   containerResultMin?.append(listMin)
 }
-
 export function scrollToTop() {
   window.scrollBy(0, -(window.scrollY - 350))
   document.querySelector("i[class*='icon-scroll-to-up-arrow-iconset']")?.click()
 }
-
 export async function timeout(ms: number) {
   return new Promise((resolve) => setTimeout(() => resolve(true), ms))
 }
-
 export async function scrollDown(delay = 1200, difference = 1000) {
   const bodyHeight = document.querySelector('body')?.offsetHeight || 0
   const footerHeight = document.querySelector('footer')?.offsetHeight || 0
@@ -271,10 +273,56 @@ export async function scrollDown(delay = 1200, difference = 1000) {
   window.scrollBy(0, scroolSize)
   await timeout(delay)
 }
-
 export function commaHandler(text: string) {
   const replaced = text.replaceAll('.', '')
   const commaIndex = replaced.indexOf(',')
   if (commaIndex < 0) return Number(replaced)
   return Number(replaced.substring(0, commaIndex))
+}
+export function writeUnitQuantity() {
+  const prdctCntnrWrppr = document.querySelector('.prdct-cntnr-wrppr')
+  if (!prdctCntnrWrppr) return
+
+  const products = prdctCntnrWrppr.querySelectorAll(
+    "div[class*='p-card-wrppr']"
+  )
+
+  for (let index = 0; index < products.length; index++) {
+    const product = products[index]
+    const productNameItem = product.querySelector('.prdct-desc-cntnr-name')
+    const productName = productNameItem?.innerHTML
+    const priceStr =
+      product
+        .querySelector("div[class='prc-box-dscntd']")
+        ?.innerHTML.replace('TL', '') || ''
+
+    const price = commaHandler(priceStr)
+    if (!productName) continue
+
+    const nameArr = productName.split(' ')
+    for (let index = 0; index < nameArr.length; index++) {
+      const nameAr = nameArr[index]
+      if (!isNaN(Number(nameAr))) {
+        const firstNumberIndex = productName.indexOf(nameAr)
+        if (firstNumberIndex < -1) continue
+        const findText = productName.substring(firstNumberIndex)
+        const findTextArr = findText.split('X')
+
+        const piece = Number(findTextArr[0].trim())
+        const multiplier =
+          findTextArr[1].includes('G') || findTextArr[1].includes('gr')
+            ? 1000
+            : 1
+        const weight = Number(
+          findTextArr[1].replace('G', '').replace('gr', '').trim()
+        )
+        if (isNaN(piece) || isNaN(multiplier) || isNaN(weight)) {
+          continue
+        }
+        const unitQuantity = price / ((piece * weight) / multiplier)
+        productNameItem.innerHTML += ` - ${unitQuantity.toFixed(2)}/TL`
+        break
+      }
+    }
+  }
 }
