@@ -128,6 +128,7 @@ export async function pageScroll() {
           startSearch()
           scrollToTop()
         }, 250)
+        return
       }
     } else if (scrollCount > 7) {
       scrollToTop()
@@ -197,7 +198,9 @@ export async function startSearch() {
     result.push(data)
   }
   result.sort((a, b) => a.price - b.price)
-  pressTheResult(result)
+  setTimeout(() => {
+    pressTheResult(result)
+  }, 200)
 }
 export function pressTheResult(data) {
   const containerResultMin = document.querySelector('#container-min')
@@ -228,15 +231,20 @@ export function pressTheResult(data) {
     const prdctCntnrWrpprHeight = document.querySelector(
       'div[class="prdct-cntnr-wrppr"]'
     )?.clientHeight
+    const prdctCntnrWrpprReact = document
+      .querySelector('div[class="prdct-cntnr-wrppr"]')
+      ?.getBoundingClientRect()
 
     itemMin.addEventListener('click', () => {
-      const scrollSize =
-        bodyHeight +
-        item.rectY +
-        prdctCntnrWrpprHeight -
-        bodyHeight -
-        window.scrollY +
-        350
+      console.log('bodyHeight', bodyHeight)
+      console.log('item.rectY', item.rectY)
+      console.log('prdctCntnrWrpprHeight', prdctCntnrWrpprHeight)
+      console.log('prdctCntnrWrpprReact', prdctCntnrWrpprReact)
+      console.log('item.rectY', item.rectY)
+      console.log('window.scrollY', window.scrollY)
+      // const scrollSize =
+      //   item.rectY - bodyHeight + prdctCntnrWrpprHeight - window.scrollY + 350
+      const scrollSize = item.rectY - window.scrollY + prdctCntnrWrpprReact?.top + 600
 
       window.scrollBy(0, scrollSize)
     })
