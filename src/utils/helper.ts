@@ -107,22 +107,21 @@ export async function pageScroll() {
     const productLength =
       document.querySelector('.prdct-cntnr-wrppr').children.length || 0
     console.log('productLength', productLength)
-    if (productLength > 100) {
+    if (productLength > 100 && scrollCount == 0) {
       startSearch()
       scrollToTop()
+      return
     }
 
     if (scrollCount < 7) {
       await timeout(250)
       scrollDown()
-    } else if (scrollCount == 7) {
+    } else if (scrollCount > 7) {
       startSearch()
       scrollToTop()
       scrollCount = 0
       resizeObserver?.disconnect()
-      document
-        .querySelector("i[class*='icon-scroll-to-up-arrow-iconset']")
-        ?.click()
+      return
     }
 
     scrollCount++
@@ -210,8 +209,23 @@ export function pressTheResult(data) {
     itemMin.innerText = `Price: ${item.price}  --  Title: ${item.title} react.y: ${item.rectY}`
 
     const bodyHeight = document.querySelector('body')?.offsetHeight
+    const prdctCntnrWrpprHeight = document.querySelector(
+      'div[class="prdct-cntnr-wrppr"]'
+    )?.clientHeight
+
+    console.log('prdctCntnrWrpprHeight', prdctCntnrWrpprHeight)
+    console.log('bodyHeight', bodyHeight)
+    console.log('item.rectY', item.rectY)
     itemMin.addEventListener('click', () => {
-      window.scrollBy(0, item.rectY + bodyHeight - window.scrollY - 1200)
+      const scrollSize =
+        bodyHeight +
+        item.rectY +
+        prdctCntnrWrpprHeight -
+        bodyHeight -
+        window.scrollY +
+        350
+      console.log('scrollSize', scrollSize)
+      window.scrollBy(0, scrollSize)
     })
     listMin.append(itemMin)
   }
@@ -220,6 +234,7 @@ export function pressTheResult(data) {
 
 export function scrollToTop() {
   window.scrollBy(0, -(window.scrollY - 350))
+  document.querySelector("i[class*='icon-scroll-to-up-arrow-iconset']")?.click()
 }
 
 export async function timeout(ms: number) {
