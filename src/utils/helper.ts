@@ -256,6 +256,7 @@ export function pressTheResult(data) {
     listMin.append(itemMin)
   }
   containerResultMin?.append(listMin)
+  writeUnitQuantity()
 }
 export function scrollToTop() {
   window.scrollBy(0, -(window.scrollY - 350))
@@ -308,6 +309,7 @@ export function writeUnitQuantity() {
         const findText = productName.substring(firstNumberIndex)
         const findTextArr = findText.split('X')
 
+        if (findTextArr.length < 2) continue
         const piece = Number(findTextArr[0].trim())
         const multiplier =
           findTextArr[1].includes('G') || findTextArr[1].includes('gr')
