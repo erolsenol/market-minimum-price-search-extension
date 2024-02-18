@@ -326,5 +326,15 @@ export function writeUnitQuantity() {
         break
       }
     }
+    const unitInfo = product.querySelector("div[class*='unit-info']")
+    const unitPrice = product.querySelector("span[class*='unit-price']")
+    unitInfo?.setAttribute('style', `font-size: 14px`)
+    unitPrice?.setAttribute('style', `transform: scale(1.6); margin: 0 0.8rem;`)
+
+    const unitPriceDiv = domTools.createElement('div')
+    unitPriceDiv?.setAttribute('style', `font-size: 1.4rem !important; position: absolute; top: 10px`)
+    unitPriceDiv.innerHTML = unitPrice?.innerHTML || ''
+    unitInfo?.append(unitPriceDiv)
+    // productNameItem.innerHTML += ` - ${unitInfo?.innerHTML || ''}`
   }
 }
