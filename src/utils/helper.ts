@@ -103,12 +103,20 @@ export async function pageScroll() {
   resizeObserver = new ResizeObserver(async (entries) => {
     console.log('Body height changed:', entries[0].target.clientHeight)
     console.log('scrollCount', scrollCount)
+
+    const productLength =
+      document.querySelector('.prdct-cntnr-wrppr').children.length || 0
+    console.log('productLength', productLength)
+    if (productLength > 100) {
+      startSearch()
+      scrollToTop()
+    }
+
     if (scrollCount < 7) {
       await timeout(250)
       scrollDown()
     } else if (scrollCount == 7) {
       startSearch()
-      console.log('startSearch')
       scrollToTop()
       scrollCount = 0
       resizeObserver?.disconnect()
@@ -117,33 +125,13 @@ export async function pageScroll() {
         ?.click()
     }
 
-    if (document.querySelector('.prdct-cntnr-wrppr').children.length > 100) {
-      startSearch()
-      scrollToTop()
-    }
+    scrollCount++
   })
   resizeObserver.observe(document.body)
   scrollDown()
-
-  // .then(() => {
-  //   console.log('qwe doneeee')
-  //   setTimeout(() => {
-  //     if (scrollCount < 5) {
-  //       pageScroll()
-  //     } else {
-  //       startSearch()
-  //     }
-  //     scrollCount++
-  //     console.log('scrollCount', scrollCount)
-  //   }, 500)
-  // })
 }
 export async function startSearch() {
-  const windowHeight = document.querySelector('body')?.offsetHeight || 300
-  console.log('windowHeight', windowHeight)
-
-  // window.scrollBy(0, windowHeight)
-
+  // const windowHeight = document.querySelector('body')?.offsetHeight || 300
   const prdctCntnrWrppr = document.querySelector(
     "div[class='prdct-cntnr-wrppr']"
   )
@@ -192,7 +180,6 @@ export async function startSearch() {
       continue
     }
     result.push(data)
-    console.log('data', data)
   }
   result.sort((a, b) => a.price - b.price)
   pressTheResult(result)
@@ -222,11 +209,7 @@ export function pressTheResult(data) {
     const itemMin = domTools.createElement('li')
     itemMin.innerText = `Price: ${item.price}  --  Title: ${item.title} react.y: ${item.rectY}`
 
-    const productContentWrapperHeight = document.querySelector(
-      "div[class='prdct-cntnr-wrppr']"
-    )?.clientHeight
     const bodyHeight = document.querySelector('body')?.offsetHeight
-    console.log('productContentWrapperHeight', productContentWrapperHeight)
     itemMin.addEventListener('click', () => {
       window.scrollBy(0, item.rectY + bodyHeight - window.scrollY - 1200)
     })
@@ -247,7 +230,6 @@ export async function scrollDown(delay = 1200, difference = 2000) {
   const bodyHeight = document.querySelector('body')?.offsetHeight || 0
   const scroolSize = bodyHeight - difference - window.scrollY
   window.scrollBy(0, scroolSize)
-  scrollCount++
   await timeout(delay)
 }
 
