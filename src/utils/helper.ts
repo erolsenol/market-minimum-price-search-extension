@@ -97,7 +97,7 @@ export function uiCreate() {
   // )
   // buttonUp.addEventListener('click', scrollToTop)
   // document.querySelector('body')?.append(buttonUp)
-  document.querySelector('body')?.setAttribute('style', `max-height: 20000px;`)
+  // document.querySelector('body')?.setAttribute('style', `max-height: 20000px;`)
 }
 export async function pageScroll() {
   resizeObserver = new ResizeObserver(async (entries) => {
