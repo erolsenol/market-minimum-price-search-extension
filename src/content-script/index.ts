@@ -1,7 +1,6 @@
-import Helper from '@/utils/helper'
+import { uiCreate } from '@/utils/helper'
 import './index.scss'
 
-const helper = new Helper()
 const src = chrome.runtime.getURL('src/content-script/iframe/index.html')
 
 const iframe = new DOMParser().parseFromString(
@@ -24,5 +23,5 @@ self.onerror = function (message, source, lineno, colno, error) {
 }
 
 // helper.initialize()
-helper.uiCreate()
+uiCreate()
 console.log('content script loaded')
