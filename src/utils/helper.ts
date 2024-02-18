@@ -100,13 +100,10 @@ export function uiCreate() {
   // document.querySelector('body')?.setAttribute('style', `max-height: 20000px;`)
 }
 export async function pageScroll() {
-  resizeObserver = new ResizeObserver(async (entries) => {
-    console.log('Body height changed:', entries[0].target.clientHeight)
-    console.log('scrollCount', scrollCount)
-
+  resizeObserver = new ResizeObserver(async () => {
     const productLength =
       document.querySelector('.prdct-cntnr-wrppr').children.length || 0
-    console.log('productLength', productLength)
+
     if (productLength > 100 && scrollCount == 0) {
       startSearch()
       scrollToTop()
@@ -117,10 +114,13 @@ export async function pageScroll() {
       await timeout(250)
       scrollDown()
     } else if (scrollCount > 7) {
-      startSearch()
       scrollToTop()
+      startSearch()
       scrollCount = 0
       resizeObserver?.disconnect()
+      setTimeout(() => {
+        scrollToTop()
+      }, 150)
       return
     }
 
@@ -206,16 +206,13 @@ export function pressTheResult(data) {
     const item = data[index]
 
     const itemMin = domTools.createElement('li')
-    itemMin.innerText = `Price: ${item.price}  --  Title: ${item.title} react.y: ${item.rectY}`
+    itemMin.innerText = `Price: ${item.price}  --  ${item.rating ? `&#9733;${item.rating}` : ''}  --  Title: ${item.title} react.y: ${item.rectY}`
 
     const bodyHeight = document.querySelector('body')?.offsetHeight
     const prdctCntnrWrpprHeight = document.querySelector(
       'div[class="prdct-cntnr-wrppr"]'
     )?.clientHeight
 
-    console.log('prdctCntnrWrpprHeight', prdctCntnrWrpprHeight)
-    console.log('bodyHeight', bodyHeight)
-    console.log('item.rectY', item.rectY)
     itemMin.addEventListener('click', () => {
       const scrollSize =
         bodyHeight +
@@ -224,7 +221,7 @@ export function pressTheResult(data) {
         bodyHeight -
         window.scrollY +
         350
-      console.log('scrollSize', scrollSize)
+
       window.scrollBy(0, scrollSize)
     })
     listMin.append(itemMin)
@@ -241,9 +238,12 @@ export async function timeout(ms: number) {
   return new Promise((resolve) => setTimeout(() => resolve(true), ms))
 }
 
-export async function scrollDown(delay = 1200, difference = 2000) {
+export async function scrollDown(delay = 1200, difference = 1000) {
   const bodyHeight = document.querySelector('body')?.offsetHeight || 0
-  const scroolSize = bodyHeight - difference - window.scrollY
+  const footerHeight = document.querySelector('footer')?.offsetHeight || 0
+  const currentScrool = document.documentElement.scrollTop
+
+  const scroolSize = bodyHeight - footerHeight - currentScrool - difference
   window.scrollBy(0, scroolSize)
   await timeout(delay)
 }
