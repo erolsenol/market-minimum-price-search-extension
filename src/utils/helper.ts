@@ -3,7 +3,8 @@ import domTools from './dom-tools'
 // import tailwindSrc from '@/content-script/tailwind.ts'
 
 let searchCount = 5,
-  scrollCount = 0
+  scrollCount = 0,
+  resizeObserver: ResizeObserver | null = null
 
 export async function initialize() {
   const meta = domTools.createElement('meta')
@@ -99,24 +100,26 @@ export function uiCreate() {
   document.querySelector('body')?.setAttribute('style', `max-height: 20000px;`)
 }
 export async function pageScroll() {
-  const resizeObserver = new ResizeObserver(async (entries) => {
+  resizeObserver = new ResizeObserver(async (entries) => {
     console.log('Body height changed:', entries[0].target.clientHeight)
     console.log('scrollCount', scrollCount)
-    if (isNaN(scrollCount)) {
-      resizeObserver.disconnect()
-      scrollToTop()
-      document
-        .querySelector("i[class*='icon-scroll-to-up-arrow-iconset']")
-        ?.click()
-      return
-    }
-    console.log('scrollCountqweqw', scrollCount)
     if (scrollCount < 7) {
       await timeout(250)
       scrollDown()
     } else if (scrollCount == 7) {
       startSearch()
-      scrollCount = NaN
+      console.log('startSearch')
+      scrollToTop()
+      scrollCount = 0
+      resizeObserver?.disconnect()
+      document
+        .querySelector("i[class*='icon-scroll-to-up-arrow-iconset']")
+        ?.click()
+    }
+
+    if (document.querySelector('.prdct-cntnr-wrppr').children.length > 100) {
+      startSearch()
+      scrollToTop()
     }
   })
   resizeObserver.observe(document.body)
@@ -179,6 +182,7 @@ export async function startSearch() {
       index,
       price,
       title,
+      rect,
       rectY,
       rating: 0,
     }
@@ -188,8 +192,9 @@ export async function startSearch() {
       continue
     }
     result.push(data)
-    result.sort((a, b) => a.price - b.price)
+    console.log('data', data)
   }
+  result.sort((a, b) => a.price - b.price)
   pressTheResult(result)
 }
 export function pressTheResult(data) {
@@ -202,22 +207,36 @@ export function pressTheResult(data) {
   const inputSearchCount = document.querySelector('#search-count')
   searchCount = Number(inputSearchCount?.getAttribute('value'))
 
-  const listMin = domTools.createElement('ul')
+  let listMin = document.querySelector('#list-min')
+  if (!listMin) {
+    listMin = domTools.createElement('ul')
+    listMin.setAttribute('id', 'list-min')
+  }
+  while (listMin.lastElementChild) {
+    listMin.removeChild(listMin.lastElementChild)
+  }
+
   for (let index = 0; index < data.length && index < searchCount; index++) {
     const item = data[index]
 
     const itemMin = domTools.createElement('li')
-    itemMin.innerText = `Price: ${item.price}  --  Title: ${item.title}`
-    itemMin.addEventListener('click', () =>
-      window.scrollBy(0, item.rectY - window.scrollY)
-    )
+    itemMin.innerText = `Price: ${item.price}  --  Title: ${item.title} react.y: ${item.rectY}`
+
+    const productContentWrapperHeight = document.querySelector(
+      "div[class='prdct-cntnr-wrppr']"
+    )?.clientHeight
+    const bodyHeight = document.querySelector('body')?.offsetHeight
+    console.log('productContentWrapperHeight', productContentWrapperHeight)
+    itemMin.addEventListener('click', () => {
+      window.scrollBy(0, item.rectY + bodyHeight - window.scrollY - 1200)
+    })
     listMin.append(itemMin)
   }
   containerResultMin?.append(listMin)
 }
 
 export function scrollToTop() {
-  window.scrollBy(0, -(window.scrollY - 150))
+  window.scrollBy(0, -(window.scrollY - 350))
 }
 
 export async function timeout(ms: number) {
