@@ -1,5 +1,6 @@
 import { crx } from '@crxjs/vite-plugin'
 import vue from '@vitejs/plugin-vue'
+import tailwindcss from '@tailwindcss/vite'
 import { dirname, relative } from 'path'
 import AutoImport from 'unplugin-auto-import/vite'
 import IconsResolver from 'unplugin-icons/resolver'
@@ -35,6 +36,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    tailwindcss(),
     crx({ manifest }),
 
     VueRouter({

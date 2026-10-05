@@ -1,4 +1,4 @@
-import '@/assets/base.scss'
+import '@/assets/base.css'
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
 import { createRouter, createWebHashHistory } from 'vue-router/auto'

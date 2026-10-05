@@ -11,7 +11,7 @@ npm ci
 npm run build
 ```
 
-Use `npm run dev` for local extension development. Load the generated unpacked extension in a Chromium browser. CI runs the build on Node.js 22. The manifest currently requests broad host permissions, and the dependency audit reports known vulnerabilities. Inspect both before installation or distribution.
+Use `npm run dev` for local extension development. Load the generated unpacked extension in a Chromium browser. CI runs the build and dependency audit on Node.js 22. The manifest currently requests broad host permissions, so inspect them before installation or distribution.
 
 ## Structure
 
