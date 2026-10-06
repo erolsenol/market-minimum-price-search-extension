@@ -1,3 +1,4 @@
+import { parsePrice, resultLimit, productLabel } from './pricing'
 import domTools from './dom-tools'
 
 // import tailwindSrc from '@/content-script/tailwind.ts'
@@ -170,16 +171,16 @@ export async function startSearch() {
     const rectY = rect.y
     const title = product.querySelector(
       "span[class*='prdct-desc-cntnr-name']"
-    )?.innerHTML
+    )?.textContent
     const priceStr =
       product
         .querySelector("div[class='prc-box-dscntd']")
-        ?.innerHTML.replace('TL', '') || ''
+        ?.textContent?.replace('TL', '') || ''
 
     const price = commaHandler(priceStr)
     const ratingCountStr = product.querySelector(
       "span[class='ratingCount']"
-    )?.innerHTML
+    )?.textContent
     let rating = null
     if (ratingCountStr) {
       rating = Number(ratingCountStr.substring(1, ratingCountStr.length - 1))
@@ -194,7 +195,7 @@ export async function startSearch() {
       rating: 0,
     }
     if (rating) data.rating = rating
-    if (price < 0.1) {
+    if (!Number.isFinite(price) || price < 0.1) {
       console.log('price not found data:', data)
       continue
     }
@@ -212,8 +213,8 @@ export function pressTheResult(data) {
     return
   }
 
-  const inputSearchCount = document.querySelector('#search-count')
-  searchCount = Number(inputSearchCount?.getAttribute('value'))
+  const inputSearchCount = document.querySelector<HTMLInputElement>('#search-count')
+  searchCount = resultLimit(inputSearchCount?.value)
 
   let listMin = document.querySelector('#list-min')
   if (!listMin) {
@@ -228,7 +229,7 @@ export function pressTheResult(data) {
     const item = data[index]
 
     const itemMin = domTools.createElement('li')
-    itemMin.innerHTML = `Price: ${item.price}  --  ${item.rating ? `&#9733;${item.rating}` : ''}  --  Title: ${item.title} react.y: ${item.rectY}`
+    itemMin.textContent = productLabel(item)
 
     const bodyHeight = document.querySelector('body')?.offsetHeight
     const prdctCntnrWrpprHeight = document.querySelector(
@@ -274,12 +275,7 @@ export async function scrollDown(delay = 1200, difference = 1000) {
   window.scrollBy(0, scroolSize)
   await timeout(delay)
 }
-export function commaHandler(text: string) {
-  const replaced = text.replaceAll('.', '')
-  const commaIndex = replaced.indexOf(',')
-  if (commaIndex < 0) return Number(replaced)
-  return Number(replaced.substring(0, commaIndex))
-}
+export const commaHandler = parsePrice
 export function writeUnitQuantity() {
   const prdctCntnrWrppr = document.querySelector('.prdct-cntnr-wrppr')
   if (!prdctCntnrWrppr) return
@@ -291,14 +287,14 @@ export function writeUnitQuantity() {
   for (let index = 0; index < products.length; index++) {
     const product = products[index]
     const productNameItem = product.querySelector('.prdct-desc-cntnr-name')
-    const productName = productNameItem?.innerHTML
+    const productName = productNameItem?.textContent
     const priceStr =
       product
         .querySelector("div[class='prc-box-dscntd']")
-        ?.innerHTML.replace('TL', '') || ''
+        ?.textContent?.replace('TL', '') || ''
 
     const price = commaHandler(priceStr)
-    if (!productName) continue
+    if (!productName || !Number.isFinite(price)) continue
 
     const nameArr = productName.split(' ')
     for (let index = 0; index < nameArr.length; index++) {
@@ -318,11 +314,11 @@ export function writeUnitQuantity() {
         const weight = Number(
           findTextArr[1].replace('G', '').replace('gr', '').trim()
         )
-        if (isNaN(piece) || isNaN(multiplier) || isNaN(weight)) {
+        if (!Number.isFinite(piece) || !Number.isFinite(weight) || piece <= 0 || weight <= 0) {
           continue
         }
         const unitQuantity = price / ((piece * weight) / multiplier)
-        productNameItem.innerHTML += ` - ${unitQuantity.toFixed(2)}/TL`
+        productNameItem.textContent += ` - ${unitQuantity.toFixed(2)}/TL`
         break
       }
     }
@@ -333,8 +329,8 @@ export function writeUnitQuantity() {
 
     const unitPriceDiv = domTools.createElement('div')
     unitPriceDiv?.setAttribute('style', `font-size: 1.4rem !important; position: absolute; top: 10px`)
-    unitPriceDiv.innerHTML = unitPrice?.innerHTML || ''
+    unitPriceDiv.textContent = unitPrice?.textContent || ''
     unitInfo?.append(unitPriceDiv)
-    // productNameItem.innerHTML += ` - ${unitInfo?.innerHTML || ''}`
+    // productNameItem.textContent += ` - ${unitInfo?.textContent || ''}`
   }
 }

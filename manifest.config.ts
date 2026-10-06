@@ -33,7 +33,7 @@ export default defineManifest(async (env) => ({
       run_at: 'document_end',
     },
   ],
-  host_permissions: ['*://*/*'],
+  host_permissions: ['https://www.trendyol.com/*'],
   options_page: 'src/options/index.html',
   permissions: ['storage', 'activeTab'],
   web_accessible_resources: [],
