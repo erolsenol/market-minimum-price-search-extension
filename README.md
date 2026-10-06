@@ -23,3 +23,7 @@ Use `npm run dev` for local extension development. Load the generated unpacked e
 No license is granted in this repository.
 
 Price parsing preserves decimal kuruş and rejects malformed input. Product result labels use text content rather than HTML. Result counts follow the current input value and are bounded to 100. Run `npm test` before changes. Live marketplace behavior still depends on third-party markup.
+
+### Release checks
+
+The npm lockfile and Node 22 CI are the supported build path. Historical duplicate pnpm/Node 18 workflows are retained under `legacy/workflows/`. GitHub releases attach a tested ZIP and checksum for loading the unpacked extension; this does not publish to the Chrome Web Store.
